@@ -56,13 +56,13 @@ Each group handles a different part of database work — structure, data, access
 | Sr. No. | Feature | DDL (Data Definition Language) | DML (Data Manipulation Language) | DCL (Data Control Language) | TCL (Transaction Control Language) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | 1 | **Full Form** | Data Definition Language | Data Manipulation Language | Data Control Language | Transaction Control Language |
-| 2 | **Core Purpose** | Defines and modifies the database schema | Performs CRUD operations on data | Manages privileges and security access | Manages transaction boundaries and states |
+| 2 | **Core Purpose** | Defines and modifies the database schema (structure) | Performs CRUD operations on data records | Manages user privileges and security permissions | Manages transaction states and boundaries |
 | 3 | **Key Commands** | CREATE, ALTER, DROP, TRUNCATE | INSERT, UPDATE, DELETE, SELECT | GRANT, REVOKE | COMMIT, ROLLBACK, SAVEPOINT |
-| 4 | **Target Objects** | Database objects (tables, views, indexes) | Data tuples (rows and individual records) | User accounts, roles, and permissions | Active transactions (logical units of work) |
-| 5 | **Auto-Commit?** | Yes (implicit commit after execution) | No (requires explicit commit to persist) | Yes (implicit commit after execution) | Not applicable (directly controls commit) |
-| 6 | **Rollback Support** | No (schema changes cannot be rolled back) | Yes (can rollback prior to commit execution) | No (privilege changes cannot be rolled back) | Used to execute rollback operations |
-| 7 | **WHERE Clause?** | Not supported | Supported (filters target rows/records) | Not supported | Not supported |
-| 8 | **Primary User** | Database Administrators (DBAs) | Application Developers and end-users | Security Administrators and DBAs | Database Developers and applications |
+| 4 | **Target Objects** | Database structures (tables, views, indexes) | Data tuples (rows and records inside tables) | User accounts, roles, and permissions | Active transactions (logical units of work) |
+| 5 | **Auto-Commit?** | Yes (implicitly committed after execution) | No (requires explicit commit to save changes) | Yes (implicitly committed after execution) | Not applicable (controls the commit itself) |
+| 6 | **Rollback Support** | No (schema changes cannot be rolled back) | Yes (can rollback changes before commit) | No (privilege changes cannot be rolled back) | Used to execute rollback operations |
+| 7 | **WHERE Clause?** | Not supported | Supported (used to filter rows) | Not supported | Not supported |
+| 8 | **Primary User** | Database Administrators (DBAs) | Application developers and end-users | Security administrators and DBAs | Database developers and transaction systems |
 
 ```sql
 -- DDL: Create the Books table
@@ -245,14 +245,14 @@ FROM Student GROUP BY Dept;
 
 | Sr. No. | Feature | Updatable View | Non-Updatable View (Read-Only) |
 | :--- | :--- | :--- | :--- |
-| 1 | **Base Tables** | Derived from a single base table | Derived from multiple base tables using JOINs |
-| 2 | **Aggregate Functions** | Prohibited (cannot use SUM, AVG, COUNT, MIN, MAX) | Permitted (often used for data aggregation and reporting) |
-| 3 | **GROUP BY / HAVING** | Prohibited in the view definition query | Permitted (used to group tuples and filter aggregates) |
-| 4 | **DISTINCT Keyword** | Prohibited (requires direct tuple-to-row mapping) | Permitted (eliminates duplicate result rows) |
-| 5 | **DML Operations** | Allowed (INSERT, UPDATE, DELETE propagate to base table) | Rejected by query compiler (view is strictly read-only) |
-| 6 | **Calculated Columns** | Prohibited (requires direct base table column mapping) | Permitted (can contain virtual columns defined by expressions) |
+| 1 | **Base Tables** | Derived from a single base table | Derived from multiple tables using JOINs |
+| 2 | **Aggregate Functions** | Not allowed (no SUM, AVG, COUNT, etc.) | Allowed (used for data aggregation) |
+| 3 | **GROUP BY / HAVING** | Not allowed in the view query | Allowed (used to group and filter rows) |
+| 4 | **DISTINCT Keyword** | Not allowed (must map to unique base rows) | Allowed (eliminates duplicate rows) |
+| 5 | **DML Operations** | Allowed (inserts/updates propagate to base table) | Prohibited (view is strictly read-only) |
+| 6 | **Calculated Columns** | Not allowed (must map to actual base columns) | Allowed (can contain expressions like Marks * 2) |
 | 7 | **NOT NULL Columns** | Must include all base table NOT NULL columns | Can omit base table NOT NULL columns |
-| 8 | **Set Operations** | Prohibited (no UNION, INTERSECT, EXCEPT allowed) | Permitted (can combine queries using set operators) |
+| 8 | **Set Operations** | Not allowed (no UNION, INTERSECT, etc.) | Allowed (can combine query results) |
 
 ---
 
@@ -349,14 +349,14 @@ FROM Emp E1 JOIN Emp E2 ON E1.MgrID = E2.EmpID;
 
 | Sr. No. | Feature | INNER JOIN | LEFT JOIN | RIGHT JOIN | FULL JOIN | CROSS JOIN | NATURAL JOIN | SELF JOIN |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 1 | **Returns** | Intersecting rows (matching values only) | All left table rows + matching right rows | All right table rows + matching left rows | Union of left and right tables (all rows) | Cartesian Product of both tables | Rows matched automatically by column name | Rows from same table compared to each other |
-| 2 | **Unmatched Left** | Discarded | Preserved (padded with NULL right values) | Discarded | Preserved (padded with NULL values) | Cartesian combined (all pairs generated) | Discarded | Depends on join type used (Inner/Left) |
-| 3 | **Unmatched Right** | Discarded | Discarded | Preserved (padded with NULL left values) | Preserved (padded with NULL values) | Cartesian combined (all pairs generated) | Discarded | Depends on join type used (Inner/Right) |
-| 4 | **ON Condition** | Required (`ON` or `USING` clause) | Required (`ON` or `USING` clause) | Required (`ON` or `USING` clause) | Required (`ON` or `USING` clause) | Prohibited (no matching criteria allowed) | Implicitly resolved (no clause permitted) | Required (uses table aliases and key condition) |
-| 5 | **NULL Rows** | No matching NULLs | Padded with NULLs on right side | Padded with NULLs on left side | Padded with NULLs on both sides | No padding NULLs | No padding NULLs | Depends on join type used |
-| 6 | **Result Size** | Minimum (match subsets only) | Moderate (contains all left rows) | Moderate (contains all right rows) | Maximum of outer joins | Cartesian Size (M × N tuples) | Minimum (shares same name match) | Varies |
-| 7 | **Primary Use Case** | Querying exact relational matches | Reports showing parent + optional child | Reports showing child + optional parent | Merging two disjoint databases | Generating all possible combinations | Quick joining on identical schema keys | Querying hierarchical data (e.g., Emp-Mgr) |
-| 8 | **Execution Speed** | High efficiency | High efficiency | High efficiency | Lower efficiency (combines outer sets) | Lowest efficiency (evaluates all pairs) | High efficiency | Moderate efficiency |
+| 1 | **Returns** | Matching rows from both tables | All left rows + matching right rows | All right rows + matching left rows | All rows from both tables | Cartesian product (all combinations) | Auto-matches on same column names | Joins table with itself |
+| 2 | **Unmatched Left** | Excluded | Kept (padded with NULL right values) | Excluded | Kept (padded with NULL right values) | Combined (all pairs generated) | Excluded | Depends on join type used |
+| 3 | **Unmatched Right** | Excluded | Excluded | Kept (padded with NULL left values) | Kept (padded with NULL left values) | Combined (all pairs generated) | Excluded | Depends on join type used |
+| 4 | **ON Clause** | Required (`ON` or `USING` clause) | Required (`ON` or `USING` clause) | Required (`ON` or `USING` clause) | Required (`ON` or `USING` clause) | Not allowed (combines all rows) | Not allowed (matches automatically) | Required (uses table aliases) |
+| 5 | **NULL Rows** | No NULLs added | Right side padded with NULLs | Left side padded with NULLs | Both sides padded with NULLs | No NULLs added | No NULLs added | Depends on join type used |
+| 6 | **Result Size** | Smallest (matches only) | At least left table size | At least right table size | Largest outer join size | Very large (M × N rows) | Small (matches only) | Varies |
+| 7 | **Use Case** | Exact matching records | All customers + their orders | All products + their sales | Combine two disjoint lists | Generating all combinations | Quick joins on same column names | Employee-Manager hierarchy |
+| 8 | **Speed** | Fast | Fast | Fast | Slow | Very slow | Fast | Medium |
 
 ---
 
@@ -487,13 +487,13 @@ SELECT * FROM Fee_Audit;
 
 | Sr. No. | Feature | Row-Level Trigger | Statement-Level Trigger |
 | :--- | :--- | :--- | :--- |
-| 1 | **Firing Frequency** | Executes iteratively once for every row modified by the transaction | Executes once for the entire DML statement, regardless of rows affected |
-| 2 | **FOR EACH ROW Clause** | Mandatory (explicit `FOR EACH ROW` clause required) | Omitted (default behavior in PL/SQL) |
-| 3 | **Transition Variables** | Fully supported (accesses old and new values via `:OLD` and `:NEW`) | Not supported (no access to individual row transition values) |
-| 4 | **Core Purpose** | Row-level data validation, value modification, and fine auditing | Statement-level auditing, security checks, or batch operations |
-| 5 | **Bulk DML Performance** | Slower for bulk operations (due to SQL-to-PL/SQL context switching) | Higher execution speed (minimal overhead; executed exactly once) |
-| 6 | **Can Modify :NEW?** | Yes (can modify `:NEW` bind variables in `BEFORE` row triggers) | No (no row transition variables exist to modify) |
-| 7 | **Use Case** | Enforcing domain constraints (e.g., validate age ≥ 18 before insert) | Auditing overall table modifications (e.g., log table update timestamps) |
-| 8 | **Execution Context** | Evaluates in the context of individual tuple states | Evaluates in the context of the overall relation/table state |
+| 1 | **Firing Frequency** | Fires once for each affected row | Fires once for the entire DML statement |
+| 2 | **FOR EACH ROW Clause** | Mandatory (must write it) | Omitted (default behavior) |
+| 3 | **Transition Variables** | Allowed (can access `:OLD` and `:NEW` values) | Not allowed (cannot access `:OLD` or `:NEW`) |
+| 4 | **Core Purpose** | Row-level validation and audit | Statement-level logging and security |
+| 5 | **Bulk Performance** | Slower (fires repeatedly for many rows) | Faster (runs exactly once) |
+| 6 | **Can Modify :NEW?** | Yes (in BEFORE row triggers) | No |
+| 7 | **Use Case** | Validate age before inserting a student | Log the timestamp of table modifications |
+| 8 | **Context** | Runs in the context of single row values | Runs in the context of the overall table |
 
 ---

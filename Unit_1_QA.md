@@ -13,14 +13,14 @@
 
 | Sr. No. | Feature | File Processing System (FPS) | Database Management System (DBMS) |
 |:---:|:---|:---|:---|
-| 1 | **Data Redundancy** | High data redundancy (same data duplicated in multiple files) | Low data redundancy (controlled replication; data stored centrally) |
-| 2 | **Data Consistency** | High risk of inconsistency (updating one file does not update copies elsewhere) | Guaranteed consistency (updates propagate automatically across the database) |
-| 3 | **Data Independence** | No data independence (programs are tightly coupled with physical file structure) | Provides logical and physical data independence (schema changes do not break programs) |
-| 4 | **Security & Access** | Poor security (limited to basic file-level OS passwords and permissions) | Robust security (supports user authentication and fine-grained column/row access control) |
-| 5 | **Concurrency Control** | No concurrency control (simultaneous access causes lock conflicts or data loss) | Built-in concurrency control (supports simultaneous access using locking protocols) |
-| 6 | **Backup & Recovery** | Manual backup (high risk of data loss; no automated transaction recovery) | Automatic crash recovery (uses checkpoints and transaction log files to restore state) |
-| 7 | **Integrity Constraints** | None (validation rules must be hardcoded into every application program) | Centralized integrity constraints (rules like primary key/foreign key checks defined in schema) |
-| 8 | **Data Querying** | No query language (requires writing custom code to parse and search files) | Declarative querying (uses structured SQL to search and retrieve data efficiently) |
+| 1 | **Data Redundancy** | High redundancy (same data duplicated in multiple files) | Low redundancy (data stored centrally in one place) |
+| 2 | **Data Consistency** | Low consistency (updating one file does not update others) | High consistency (updates propagate automatically) |
+| 3 | **Data Independence** | No data independence (change in file format breaks programs) | Logical and physical data independence is provided |
+| 4 | **Security & Access** | Poor security (limited to basic file-level passwords) | Robust security (supports user access roles and permissions) |
+| 5 | **Concurrency Control** | No concurrency control (multiple users cannot write safely) | Built-in concurrency control (using locking protocols) |
+| 6 | **Backup & Recovery** | Manual backup (high risk of data loss on crash) | Automatic crash recovery (uses transaction logs) |
+| 7 | **Integrity Constraints** | No central rules (validation must be coded in programs) | Centralized rules (keys and constraints defined in schema) |
+| 8 | **Data Querying** | No query language (must write custom code to search files) | Declarative querying (uses simple SQL queries) |
 
 ---
 

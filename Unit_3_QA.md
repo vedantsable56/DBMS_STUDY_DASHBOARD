@@ -67,14 +67,14 @@ The fix is **normalization** — splitting the big table into smaller, cleaner t
 
 | Sr. No. | Feature | Before Normalization | After Normalization |
 |:---|:---|:---|:---|
-| 1 | **Insertion Anomaly** | Present (cannot insert independent entities without dummy values; e.g., cannot add a department without enrolling a student) | Resolved (independent entities can be inserted into their respective relation directly) |
-| 2 | **Deletion Anomaly** | Present (loss of parent entity data when child entity is deleted; e.g., deleting a student accidentally deletes department details) | Resolved (deleting a child entity preserves the parent relation data) |
-| 3 | **Update Anomaly** | Present (updating a single attribute requires modifying multiple redundant tuples, leading to inconsistency risk) | Resolved (updating an attribute requires modifying a single tuple in a single relation) |
-| 4 | **Data Redundancy** | High data redundancy (duplicate attributes stored across multiple tuples) | Controlled/Minimal data redundancy (each non-key attribute is stored exactly once) |
-| 5 | **Data Integrity** | Low (high risk of inconsistent states and data anomalies) | High (ensured by primary/foreign key constraints and elimination of duplication) |
-| 6 | **Storage Efficiency** | Wasted storage (high storage overhead due to redundant attribute columns) | Optimized storage (efficiency achieved via relation decomposition) |
-| 7 | **Primary Key Design** | Single composite key or lack of clean candidate keys for the mixed entity | Distinct, well-defined primary keys for each decomposed relation |
-| 8 | **Relational Schema** | Single unnormalized relation (flat file design mixing multiple entity types) | Decomposed normalized relations linked via Referential Integrity Constraints (Foreign Keys) |
+| 1 | **Insertion Anomaly** | Present (cannot add department without adding student) | Resolved (can insert department directly) |
+| 2 | **Deletion Anomaly** | Present (deleting student deletes department details) | Resolved (deleting student preserves department details) |
+| 3 | **Update Anomaly** | Present (must update department in multiple student rows) | Resolved (update department in a single row only) |
+| 4 | **Data Redundancy** | High (department info repeated for every student) | Low (department info stored exactly once) |
+| 5 | **Data Integrity** | Low (risk of inconsistent data across rows) | High (enforced by keys and unique storage) |
+| 6 | **Storage Space** | Wasted (due to repeating columns in many rows) | Optimized (no repeated columns) |
+| 7 | **Primary Key** | One large composite key for mixed entities | Distinct primary keys for each table |
+| 8 | **Relational Schema** | Single unnormalized table mixing multiple entities | Decomposed tables linked by foreign keys |
 
 ---
 
@@ -180,14 +180,14 @@ Apply B → C:  {E, D, A, B, C}
 
 | Sr. No. | Feature | Super Key | Candidate Key |
 |:---|:---|:---|:---|
-| 1 | **Definition** | A set of one or more attributes whose values uniquely identify a tuple in a relation | A minimal super key (no proper subset can uniquely identify the tuple) |
-| 2 | **Set Minimality** | Not necessarily minimal (can contain redundant/extra attributes) | Strictly minimal (irreducible set of attributes) |
-| 3 | **Cardinality (Count)** | High cardinality (many combinations can serve as super keys) | Lower cardinality (only minimal attribute subsets qualify) |
-| 4 | **Nullable Attributes** | May contain nullable attributes in the non-identifying portion | Strictly non-nullable attributes (due to unique identification requirements) |
-| 5 | **Attribute Redundancy** | High redundancy (contains attributes not required for unique identification) | Zero redundancy (all attributes are essential for unique identification) |
-| 6 | **Primary Key Eligibility** | Cannot be selected as a Primary Key without first being minimized | Directly eligible to be selected as the Primary Key (others become Alternate Keys) |
-| 7 | **Example (R = {A, B}, A → B)** | {A} and {A, B} are both super keys | Only {A} is a candidate key |
-| 8 | **Application** | Forms the baseline definition for tuple identification in relational theory | Crucial for identifying functional dependencies and selecting the Primary Key |
+| 1 | **Definition** | A set of attributes that uniquely identifies a row | A minimal super key (no proper subset is a key) |
+| 2 | **Minimality** | Not minimal (can contain unnecessary attributes) | Strictly minimal (irreducible set) |
+| 3 | **Count** | Many possible combinations exist | Fewer combinations qualify |
+| 4 | **Nullable Values** | May contain nullable attributes | Strictly non-nullable attributes |
+| 5 | **Redundancy** | Can have redundant columns | Zero redundant columns |
+| 6 | **Primary Key Eligibility** | Cannot directly be chosen as Primary Key | Directly eligible to be selected as Primary Key |
+| 7 | **Example (R={A,B})** | Both {A} and {A, B} are super keys | Only {A} is a candidate key |
+| 8 | **Application** | Baseline definition for tuple identification | Used for normalization and Primary Key selection |
 
 ---
 
@@ -317,16 +317,16 @@ Student_Guide(Student_ID, Guide)    ← PK: (Student_ID, Guide)
 
 ### Comparison Table: Normal Forms
 
-| Sr. No. | Feature | 1NF (First Normal Form) | 2NF (Second Normal Form) | 3NF (Third Normal Form) | BCNF (Boyce-Codd Normal Form) |
+| Sr. No. | Feature | 1NF | 2NF | 3NF | BCNF |
 |:---|:---|:---|:---|:---|:---|
-| 1 | **Primary Objective** | Enforce attribute atomicity | Eliminate partial dependencies | Eliminate transitive dependencies | Resolve anomalies from overlapping candidate keys |
-| 2 | **Precondition** | Relational model baseline | Must satisfy 1NF | Must satisfy 2NF | Must satisfy 3NF |
-| 3 | **Partial Dependency** | Allowed | Eliminated (no non-prime attribute depends on subset of candidate key) | Eliminated | Eliminated |
-| 4 | **Transitive Dependency** | Allowed | Allowed | Eliminated (no non-prime attribute depends transitively on candidate key) | Eliminated |
-| 5 | **Left Side = Super Key?** | Not required | Not required | Not required (optional if right side is prime attribute) | Strictly required (for every non-trivial FD X \to Y, X must be a super key) |
-| 6 | **Decomposition Fix** | Flat-file normalization (split multi-valued entries into rows) | Decompose relation to isolate partially dependent attributes | Decompose relation to isolate transitively dependent attributes | Decompose relation to isolate overlapping key dependencies |
+| 1 | **Primary Goal** | Enforce atomic values (no composite/multi-valued attributes) | Eliminate partial dependencies (non-prime depends on full key) | Eliminate transitive dependencies (non-prime depends on key only) | Ensure left side of all FDs is a super key |
+| 2 | **Precondition** | None | Must satisfy 1NF | Must satisfy 2NF | Must satisfy 3NF |
+| 3 | **Partial Dependency** | Allowed | Eliminated | Eliminated | Eliminated |
+| 4 | **Transitive Dependency** | Allowed | Allowed | Eliminated | Eliminated |
+| 5 | **Left Side = Super Key?** | Not required | Not required | Not required (optional if right side is prime attribute) | Strictly required for all non-trivial FDs |
+| 6 | **Decomposition Fix** | Split multi-valued columns into separate rows | Move partially dependent columns to new table | Move transitively dependent columns to new table | Move overlapping key dependencies to new table |
 | 7 | **Data Redundancy** | High | Moderate | Low | Minimal |
-| 8 | **Dependency Preservation** | Always preserved | Always preserved | Always preserved | May not be preserved (sometimes lost during BCNF decomposition) |
+| 8 | **Dependency Preservation** | Always preserved | Always preserved | Always preserved | May not be preserved (sometimes lost) |
 
 ---
 
@@ -375,11 +375,11 @@ Consider a Bookstore with tables: **Books(Book_ID, Title, Price)** and **Orders(
 
 | Sr. No. | Feature | Physical Data Independence (Rule 8) | Logical Data Independence (Rule 9) |
 |:---|:---|:---|:---|
-| 1 | **Definition** | Ability to modify physical schemas without altering conceptual schemas or application programs | Ability to modify conceptual schemas without altering external views or application programs |
-| 2 | **Scope of Change** | Physical storage formats, file organizations, compression, or index structures | Relational structures (adding/deleting attributes, renaming relations, decomposition) |
-| 3 | **Unaffected Layer** | Conceptual schema (logical tables) and query applications | External schema (views) and existing query applications |
-| 4 | **Architectural Level** | Concerned with the mapping between Internal (Physical) and Conceptual levels | Concerned with the mapping between Conceptual and External (View) levels |
-| 5 | **Frequency of Change** | High (frequent storage optimization or hardware updates) | Low (infrequent structural redesign or schema evolution) |
-| 6 | **Responsible Actor** | Database Administrator (DBA) | Database Designer and Application Developer |
-| 7 | **DBMS Mapping Mechanism** | Internal schema update (automatically matches conceptual references to physical blocks) | External view virtualization (logical views map to new base tables) |
-| 8 | **Real-world Example** | Migrating table spaces from HDD to SSD, or creating a B+ Tree index | Adding an optional "MobileNumber" attribute, or partitioning a table |
+| 1 | **Definition** | Change physical storage without affecting conceptual schema | Change conceptual schema without affecting views/programs |
+| 2 | **Scope of Change** | File location, indexes, database path, or disk type | Adding columns, renaming tables, or splitting relations |
+| 3 | **Unaffected Layer** | Conceptual tables and SQL queries remain same | External views and application programs remain same |
+| 4 | **Architectural Level** | Mapping between Internal and Conceptual levels | Mapping between Conceptual and External levels |
+| 5 | **Frequency** | High (hardware upgrades or index tuning) | Low (infrequent database schema redesign) |
+| 6 | **Responsible Actor** | Database Administrator (DBA) | Database Designer and DBA |
+| 7 | **DBMS Mechanism** | Updates internal-to-conceptual schema mapping | Uses logical views to hide structural changes |
+| 8 | **Example** | Moving database files from HDD to SSD | Adding an optional "Mobile" column to student table |

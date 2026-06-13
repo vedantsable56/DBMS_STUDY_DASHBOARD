@@ -8,14 +8,14 @@
 
 | Sr. | Feature | SQL Database | NoSQL Database |
 | :--- | :--- | :--- | :--- |
-| 1 | **Schema Architecture** | Strict, predefined relational schema (defined via DDL before data insertion) | Dynamic, flexible schema (schema-less / schema-on-read) |
-| 2 | **Scalability Model** | Vertical scalability (scale-up: adding hardware resources to a single node) | Horizontal scalability (scale-out: partitioning data across commodity node clusters) |
-| 3 | **Query Interface** | Standardized Declarative SQL (Structured Query Language) | No standard query language; utilizes custom APIs and document queries |
-| 4 | **Data Model / Format** | Relational structures (tables consisting of structured tuples and attributes) | Semi-structured/Unstructured formats (JSON/BSON documents, key-value, wide-column, graph structures) |
-| 5 | **Transaction Integrity** | Strict ACID properties (Atomicity, Consistency, Isolation, Durability) | BASE model (Basically Available, Soft-state, Eventual consistency) |
-| 6 | **Relational Joins** | Native SQL JOIN operations supported by foreign key constraints | Denormalized storage patterns (nested/embedded documents; parent-child reference links) |
-| 7 | **Best Used For** | Complex queries, transaction safety (e.g., Banking, ERP, payments) | High throughput, varying schemas, real-time scaling (e.g., social media, IoT, big data) |
-| 8 | **Examples** | MySQL, PostgreSQL, MS SQL Server, Oracle | MongoDB, Redis, Apache Cassandra, Neo4j |
+| 1 | **Schema Architecture** | Strict, predefined schema (defined via DDL before insert) | Dynamic schema (schema-less / schema-on-read) |
+| 2 | **Scalability Model** | Vertical scalability (scale-up: add CPU/RAM to one server) | Horizontal scalability (scale-out: partition across cluster) |
+| 3 | **Query Interface** | Standardized Declarative SQL (Structured Query Language) | No standard query language (uses custom APIs or JSON queries) |
+| 4 | **Data Model** | Relational tables (consisting of structured rows and columns) | Semi-structured (JSON documents, key-value, graph, column-family) |
+| 5 | **Transaction Integrity** | Strict ACID properties (Atomicity, Consistency, Isolation, Durability) | BASE properties (Basically Available, Soft-state, Eventual consistency) |
+| 6 | **Relational Joins** | Native SQL JOINs supported by foreign keys | Denormalized storage (embedded documents; no native JOINs) |
+| 7 | **Best Used For** | Complex transactions and relational safety (e.g., Banking) | High throughput and varying data models (e.g., Social Media) |
+| 8 | **Examples** | MySQL, PostgreSQL, Oracle, MS SQL Server | MongoDB, Redis, Apache Cassandra, Neo4j |
 
 ---
 
@@ -158,14 +158,14 @@ Availability (A)   Partition Tolerance (P)
 
 | Sr. | Feature | ACID Model (SQL) | BASE Model (NoSQL) |
 | :--- | :--- | :--- | :--- |
-| 1 | **Definition / Components** | Atomicity, Consistency, Isolation, Durability | Basically Available, Soft-state, Eventually Consistent |
-| 2 | **Consistency Guarantee** | Strong Consistency (linearizable; all database nodes see identical state simultaneously) | Eventual Consistency (replicas converge to identical state asynchronously after write activity ceases) |
-| 3 | **Availability (Partition Tolerance)** | Prioritizes Consistency over Availability (pessimistic locking; stalls during partitions) | Prioritizes Availability over Consistency (optimistic replication; remains operational during partitions) |
-| 4 | **Data State** | Consistent/Deterministic (system transitions synchronously between defined states) | Soft-state (data state changes dynamically due to background replica synchronization) |
-| 5 | **Design Focus** | High database safety, relational integrity, and strict correctness | High system availability, latency minimization, and horizontal scale |
-| 6 | **Transaction Scope** | Multi-row/Distributed transaction boundaries (two-phase commit protocol support) | Local transaction boundaries (typically scoped to single keys or single documents) |
-| 7 | **Scalability Approach** | Vertical scaling (scale-up: adding hardware resources) | Horizontal scaling (scale-out: data sharding and replica sets) |
-| 8 | **Ideal Application** | Financial ledger entries, medical records, checkout payments | Web page views, social feeds, shopping carts, activity logging |
+| 1 | **Definition** | Atomicity, Consistency, Isolation, Durability | Basically Available, Soft-state, Eventually Consistent |
+| 2 | **Consistency** | Strong Consistency (all nodes see identical state immediately) | Eventual Consistency (replicas sync asynchronously over time) |
+| 3 | **Availability** | Prioritizes consistency over availability (stalls on failure) | Prioritizes availability over consistency (operational on failure) |
+| 4 | **Data State** | Consistent (transitions synchronously between defined states) | Soft-state (data state changes dynamically in background) |
+| 5 | **Design Focus** | High database safety and strict correctness | High availability and horizontal scaling |
+| 6 | **Transaction Scope** | Multi-row distributed transactions supported | Single-key or single-document transactions only |
+| 7 | **Scalability** | Vertical scaling (scale-up: adding hardware resources) | Horizontal scaling (scale-out: data sharding and replica sets) |
+| 8 | **Best Used For** | Financial transactions, checkout payments, medical records | Social feeds, shopping carts, activity logs, web page views |
 
 ---
 
