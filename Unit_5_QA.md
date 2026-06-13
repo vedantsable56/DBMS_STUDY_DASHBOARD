@@ -261,100 +261,27 @@ db.students.deleteMany({})
 
 ---
 
-## Q5. Explain MongoDB Indexing [8 Marks]
+## Q5. Explain MongoDB Indexing
 
-### Introduction
-
-- A **MongoDB Index** is a special data structure that improves the speed of data retrieval operations.
-- Indexes store a small portion of the collection's data in an easy-to-traverse **B-Tree** format.
-- Without indexes, MongoDB must perform a **Collection Scan (COLLSCAN)**, searching every document in the collection.
-
-### Core Concept of Indexing
-
-- **Index Scan (IXSCAN)**: MongoDB uses the index to quickly locate documents, avoiding slow full-table scans.
-- **B-Tree Structure**: MongoDB indexes are stored as B-Trees, which keep keys in sorted order for fast binary searches.
-- **Read vs Write Trade-off**: Indexes make **read queries extremely fast**, but slightly **slow down write operations** (insert, update, delete).
-- **Default Index**: MongoDB automatically creates a unique index on the **_id** field for every collection.
-- **Index Selection**: The MongoDB query optimizer automatically selects the best index to use for a given query.
-- **Memory Overhead**: Indexes are stored in RAM for fast access, so creating too many indexes can consume system memory.
-
-### Types of MongoDB Indexes
-
-- **Single Field Index**: Indexes a single field in ascending (`1`) or descending (`-1`) order.
-- **Compound Index**: Indexes multiple fields together (e.g., sorting by department first, then by marks).
-- **Multikey Index**: Automatically created when indexing an **array field**, creating separate index entries for each array element.
-- **Text Index**: Used to support text search queries on string fields (supports searches like `text` and `search`).
-- **Hashed Index**: Indexes the hash of a field's value, which is useful for partitioning data across clusters (sharding).
-- **Unique Index**: Enforces that no two documents in the collection have duplicate values for the indexed field.
-
-### Index Management and Analysis
-
-- **createIndex()**: Command used to build a new index (e.g., `db.students.createIndex({ rollNo: 1 })`).
-- **getIndexes()**: Command used to list all existing indexes defined on a collection.
-- **dropIndex()**: Command used to delete a specific index to free up storage space.
-- **explain("executionStats")**: Appended to a query to analyze index performance and execution details.
-- **totalDocsExamined**: Stat in explain output that shows the number of documents read; should be low if index is used.
-- **Covered Query**: A query that can be answered entirely using the index without reading any base documents.
+- An **Index** is a data structure used to **speed up search queries** in a collection.
+- Without indexes, MongoDB performs a **Collection Scan (COLLSCAN)**, reading every document to find matches.
+- With indexes, MongoDB performs an **Index Scan (IXSCAN)**, directly jumping to the target data.
+- MongoDB stores indexes in a sorted **B-Tree** format for fast search performance.
+- MongoDB automatically creates a default unique index on the **_id** field.
+- **Single Field Index** indexes one field (e.g., `{ rollNo: 1 }`), while **Compound Index** indexes multiple fields (e.g., `{ branch: 1, marks: -1 }`).
+- Creating indexes makes **reads faster** but slightly **slows down write operations** (insert, update, delete).
+- Use the **createIndex()** command to create an index, and **dropIndex()** to delete it.
+- Use the **explain("executionStats")** method to verify if a query is using an index.
 
 ---
 
-## Q6. Explain MongoDB Aggregation with Example [8 Marks]
+## Q6. Explain MongoDB Aggregation with Example
 
-### Introduction
-
-- **MongoDB Aggregation** processes multiple documents and returns computed summary results (like sum or average).
-- It uses an **Aggregation Pipeline** where documents pass through sequential stages to be filtered, grouped, and transformed.
-- It is the NoSQL equivalent of SQL's **GROUP BY** clause and join operations.
-
-### Aggregation Pipeline Concept
-
-- **Pipeline Stages**: Documents flow through a sequence of stages; the output of one stage is the input to the next.
-- **Server-Side Execution**: Aggregation runs entirely on the database server, minimizing network data transfer.
-- **Non-Destructive**: The pipeline only processes and displays data; it does not modify the original documents.
-- **Output Result**: Returns a cursor pointing to the final list of transformed documents.
-- **Optimized Execution**: The query engine can automatically reorder stages (like moving filter stages early) for speed.
-- **Memory Limit**: Pipeline stages have a default RAM limit of 100MB, but can use disk storage if `allowDiskUse` is enabled.
-
-### Common Pipeline Stages
-
-- **$match**: Filters the document stream to pass only matching documents (similar to SQL `WHERE`).
-- **$group**: Groups documents by a specified key and performs accumulator calculations (similar to SQL `GROUP BY`).
-- **$project**: Reshapes documents by adding, renaming, or hiding fields (similar to SQL `SELECT`).
-- **$sort**: Reorders the documents in the stream in ascending (`1`) or descending (`-1`) order.
-- **$limit**: Restricts the number of documents passing through the pipeline.
-- **$unwind**: Deconstructs an array field from input documents, outputting a separate document for each array element.
-
-### Aggregation Accumulator Operators
-
-- **$sum**: Calculates the total sum of numeric values in each grouped category.
-- **$avg**: Computes the average numeric value for each group.
-- **$min**: Finds the lowest value of a field within each group.
-- **$max**: Finds the highest value of a field within each group.
-- **$first**: Returns the value from the first document in the group.
-- **$last**: Returns the value from the last document in the group.
-- **$push**: Accumulates values from all documents in a group into a new array.
-
-### Practical Code Example
-
-```javascript
-// Sample Sales Collection Input Documents
-{ _id: 1, item: "Laptop", dept: "Comp", amount: 50000 },
-{ _id: 2, item: "Mouse", dept: "Comp", amount: 1000 },
-{ _id: 3, item: "Router", dept: "IT", amount: 5000 },
-{ _id: 4, item: "Keyboard", dept: "Comp", amount: 2000 }
-
-// Aggregation Query: Find total sales per department for items >= 1500
-db.sales.aggregate([
-  { match: { amount: { gte: 1500 } } },
-  { group: { _id: "dept", totalSales: { sum: "amount" } } },
-  { $sort: { totalSales: -1 } }
-])
-```
-
-- **Input Collection**: Contains sales records with department and purchase amount details.
-- **Match Filtering**: The `match` stage filters out items with amount < 1500 (excluding the 1000$ Mouse document).
-- **Group Identification**: The `group` stage groups matching documents by their `dept` attribute.
-- **Sum Accumulation**: The `$sum` operator adds up the amount values for each grouped department.
-- **Sort Ordering**: The `$sort` stage orders the output departments in descending order (`-1`) of their `totalSales`.
-- **Final Output**: Returns computed results showing Comp (52000) and IT (5000) department totals.
-
+- **Aggregation** is used to process multiple documents and return **computed results** like sum, average, or count.
+- It uses an **Aggregation Pipeline** where documents pass through sequential stages step-by-step.
+- The output of one stage acts as the input to the next stage in the pipeline.
+- Common pipeline stages include **match** (to filter), **group** (to group), and **$sort** (to sort).
+- Accumulators like **sum**, **avg**, **min**, and **max** are used inside the group stage to compute values.
+- **Example Code**:
+  `db.sales.aggregate([{ match: { qty: { gte: 10 } } }, { group: { _id: "item", total: { sum: "price" } } }])`
+- In this example, it first filters items with quantity ≥ 10, then groups them by item name, and sums their price.
