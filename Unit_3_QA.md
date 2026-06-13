@@ -67,14 +67,14 @@ The fix is **normalization** — splitting the big table into smaller, cleaner t
 
 | Sr. No. | Feature | Before Normalization | After Normalization |
 |:---|:---|:---|:---|
-| 1 | **Insertion Anomaly** | Present — cannot add dept without student | Absent — add dept freely |
-| 2 | **Deletion Anomaly** | Present — deleting student removes dept | Absent — dept stays safe |
-| 3 | **Update Anomaly** | Present — must update many rows | Absent — update one row only |
-| 4 | **Data Redundancy** | High — dept info repeated per student | Zero — dept info stored once |
-| 5 | **Data Correctness** | Low — risk of wrong or mixed data | High — single correct copy |
-| 6 | **Storage Space** | Wasted — same data in many rows | Saved — no repeated data |
-| 7 | **Primary Key** | One big messy table with one PK | Clean separate PKs per table |
-| 8 | **Table Design** | One large table mixing student + dept | Two focused tables linked by FK |
+| 1 | **Insertion Anomaly** | Present (cannot insert independent entities without dummy values; e.g., cannot add a department without enrolling a student) | Resolved (independent entities can be inserted into their respective relation directly) |
+| 2 | **Deletion Anomaly** | Present (loss of parent entity data when child entity is deleted; e.g., deleting a student accidentally deletes department details) | Resolved (deleting a child entity preserves the parent relation data) |
+| 3 | **Update Anomaly** | Present (updating a single attribute requires modifying multiple redundant tuples, leading to inconsistency risk) | Resolved (updating an attribute requires modifying a single tuple in a single relation) |
+| 4 | **Data Redundancy** | High data redundancy (duplicate attributes stored across multiple tuples) | Controlled/Minimal data redundancy (each non-key attribute is stored exactly once) |
+| 5 | **Data Integrity** | Low (high risk of inconsistent states and data anomalies) | High (ensured by primary/foreign key constraints and elimination of duplication) |
+| 6 | **Storage Efficiency** | Wasted storage (high storage overhead due to redundant attribute columns) | Optimized storage (efficiency achieved via relation decomposition) |
+| 7 | **Primary Key Design** | Single composite key or lack of clean candidate keys for the mixed entity | Distinct, well-defined primary keys for each decomposed relation |
+| 8 | **Relational Schema** | Single unnormalized relation (flat file design mixing multiple entity types) | Decomposed normalized relations linked via Referential Integrity Constraints (Foreign Keys) |
 
 ---
 
@@ -180,14 +180,14 @@ Apply B → C:  {E, D, A, B, C}
 
 | Sr. No. | Feature | Super Key | Candidate Key |
 |:---|:---|:---|:---|
-| 1 | **Definition** | Any set that can identify all rows | Smallest possible super key |
-| 2 | **Size** | Can have extra unnecessary attributes | No extra attributes — minimal |
-| 3 | **Count** | Many possible combinations | Fewer — only minimal ones |
-| 4 | **NULL Values** | May allow NULLs in extra columns | No NULLs allowed |
-| 5 | **Redundancy** | May have extra or useless columns | Zero extra columns |
-| 6 | **Primary Key** | Cannot directly become PK | Any candidate key can be PK |
-| 7 | **Example (R = A,B)** | {A}, {A,B} both are super keys | Only {A} is candidate key |
-| 8 | **Use** | Used to check key property | Used for normalization and PK selection |
+| 1 | **Definition** | A set of one or more attributes whose values uniquely identify a tuple in a relation | A minimal super key (no proper subset can uniquely identify the tuple) |
+| 2 | **Set Minimality** | Not necessarily minimal (can contain redundant/extra attributes) | Strictly minimal (irreducible set of attributes) |
+| 3 | **Cardinality (Count)** | High cardinality (many combinations can serve as super keys) | Lower cardinality (only minimal attribute subsets qualify) |
+| 4 | **Nullable Attributes** | May contain nullable attributes in the non-identifying portion | Strictly non-nullable attributes (due to unique identification requirements) |
+| 5 | **Attribute Redundancy** | High redundancy (contains attributes not required for unique identification) | Zero redundancy (all attributes are essential for unique identification) |
+| 6 | **Primary Key Eligibility** | Cannot be selected as a Primary Key without first being minimized | Directly eligible to be selected as the Primary Key (others become Alternate Keys) |
+| 7 | **Example (R = {A, B}, A → B)** | {A} and {A, B} are both super keys | Only {A} is a candidate key |
+| 8 | **Application** | Forms the baseline definition for tuple identification in relational theory | Crucial for identifying functional dependencies and selecting the Primary Key |
 
 ---
 
@@ -317,16 +317,16 @@ Student_Guide(Student_ID, Guide)    ← PK: (Student_ID, Guide)
 
 ### Comparison Table: Normal Forms
 
-| Sr. No. | Feature | 1NF | 2NF | 3NF | BCNF |
+| Sr. No. | Feature | 1NF (First Normal Form) | 2NF (Second Normal Form) | 3NF (Third Normal Form) | BCNF (Boyce-Codd Normal Form) |
 |:---|:---|:---|:---|:---|:---|
-| 1 | **Main Goal** | Make values atomic | Remove partial dependency | Remove transitive dependency | Left side must be super key |
-| 2 | **Precondition** | None | Must be in 1NF | Must be in 2NF | Must be in 3NF |
-| 3 | **Partial Dependency** | Allowed | Removed | Removed | Removed |
-| 4 | **Transitive Dependency** | Allowed | Allowed | Removed | Removed |
-| 5 | **Left Side = Super Key?** | Not needed | Not needed | Not needed | Always needed |
-| 6 | **How to Fix** | Split lists into rows | Move partial columns out | Move transitive columns out | Move non-key FDs out |
-| 7 | **Redundancy** | High | Medium | Low | Very Low |
-| 8 | **Dependency Preserved?** | Always yes | Always yes | Always yes | Sometimes no |
+| 1 | **Primary Objective** | Enforce attribute atomicity | Eliminate partial dependencies | Eliminate transitive dependencies | Resolve anomalies from overlapping candidate keys |
+| 2 | **Precondition** | Relational model baseline | Must satisfy 1NF | Must satisfy 2NF | Must satisfy 3NF |
+| 3 | **Partial Dependency** | Allowed | Eliminated (no non-prime attribute depends on subset of candidate key) | Eliminated | Eliminated |
+| 4 | **Transitive Dependency** | Allowed | Allowed | Eliminated (no non-prime attribute depends transitively on candidate key) | Eliminated |
+| 5 | **Left Side = Super Key?** | Not required | Not required | Not required (optional if right side is prime attribute) | Strictly required (for every non-trivial FD X \to Y, X must be a super key) |
+| 6 | **Decomposition Fix** | Flat-file normalization (split multi-valued entries into rows) | Decompose relation to isolate partially dependent attributes | Decompose relation to isolate transitively dependent attributes | Decompose relation to isolate overlapping key dependencies |
+| 7 | **Data Redundancy** | High | Moderate | Low | Minimal |
+| 8 | **Dependency Preservation** | Always preserved | Always preserved | Always preserved | May not be preserved (sometimes lost during BCNF decomposition) |
 
 ---
 
@@ -373,13 +373,13 @@ Consider a Bookstore with tables: **Books(Book_ID, Title, Price)** and **Orders(
 
 ### Comparison Table: Physical vs Logical Independence
 
-| Sr. No. | Feature | Physical Independence (Rule 8) | Logical Independence (Rule 9) |
+| Sr. No. | Feature | Physical Data Independence (Rule 8) | Logical Data Independence (Rule 9) |
 |:---|:---|:---|:---|
-| 1 | **Meaning** | Change storage, apps still work | Change table design, apps still work |
-| 2 | **What Changes** | File location, indexes, disk type | Add/remove columns, rename tables |
-| 3 | **What Stays Same** | All SQL queries and programs | Old SQL queries and programs |
-| 4 | **Level** | Internal or physical level of DBMS | Conceptual or logical level of DBMS |
-| 5 | **How Often** | Happens often (hardware upgrades) | Happens rarely (redesign) |
-| 6 | **Who Handles It** | DBA (Database Administrator) | Developer and DBA together |
-| 7 | **DBMS Role** | Maps queries to physical storage | Uses views to hide changes |
-| 8 | **Example** | Moving DB files from HDD to SSD | Adding "Mobile" column to Student table |
+| 1 | **Definition** | Ability to modify physical schemas without altering conceptual schemas or application programs | Ability to modify conceptual schemas without altering external views or application programs |
+| 2 | **Scope of Change** | Physical storage formats, file organizations, compression, or index structures | Relational structures (adding/deleting attributes, renaming relations, decomposition) |
+| 3 | **Unaffected Layer** | Conceptual schema (logical tables) and query applications | External schema (views) and existing query applications |
+| 4 | **Architectural Level** | Concerned with the mapping between Internal (Physical) and Conceptual levels | Concerned with the mapping between Conceptual and External (View) levels |
+| 5 | **Frequency of Change** | High (frequent storage optimization or hardware updates) | Low (infrequent structural redesign or schema evolution) |
+| 6 | **Responsible Actor** | Database Administrator (DBA) | Database Designer and Application Developer |
+| 7 | **DBMS Mapping Mechanism** | Internal schema update (automatically matches conceptual references to physical blocks) | External view virtualization (logical views map to new base tables) |
+| 8 | **Real-world Example** | Migrating table spaces from HDD to SSD, or creating a B+ Tree index | Adding an optional "MobileNumber" attribute, or partitioning a table |

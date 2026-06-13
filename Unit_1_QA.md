@@ -11,16 +11,16 @@
 
 ### Comparison Table
 
-| Sr. No. | Feature | File Processing System | DBMS |
+| Sr. No. | Feature | File Processing System (FPS) | Database Management System (DBMS) |
 |:---:|:---|:---|:---|
-| 1 | **Data Duplication** | Same data copied in many files | Data stored only once in one place |
-| 2 | **Data Consistency** | Changing one file does not update others | One update reflects everywhere |
-| 3 | **Data Independence** | If file format changes, program breaks | Program works even if storage changes |
-| 4 | **Security** | Only basic file-level password protection | Column-level and row-level access control |
-| 5 | **Multiple Users** | Two users cannot write at the same time | Many users can work together safely |
-| 6 | **Backup & Recovery** | No automatic backup, data can be lost | Automatic backup using transaction logs |
-| 7 | **Data Rules** | Rules written inside every program separately | Rules defined once in database schema |
-| 8 | **Searching Data** | Need to write full program to search | Use simple SQL queries to search |
+| 1 | **Data Redundancy** | High data redundancy (same data duplicated in multiple files) | Low data redundancy (controlled replication; data stored centrally) |
+| 2 | **Data Consistency** | High risk of inconsistency (updating one file does not update copies elsewhere) | Guaranteed consistency (updates propagate automatically across the database) |
+| 3 | **Data Independence** | No data independence (programs are tightly coupled with physical file structure) | Provides logical and physical data independence (schema changes do not break programs) |
+| 4 | **Security & Access** | Poor security (limited to basic file-level OS passwords and permissions) | Robust security (supports user authentication and fine-grained column/row access control) |
+| 5 | **Concurrency Control** | No concurrency control (simultaneous access causes lock conflicts or data loss) | Built-in concurrency control (supports simultaneous access using locking protocols) |
+| 6 | **Backup & Recovery** | Manual backup (high risk of data loss; no automated transaction recovery) | Automatic crash recovery (uses checkpoints and transaction log files to restore state) |
+| 7 | **Integrity Constraints** | None (validation rules must be hardcoded into every application program) | Centralized integrity constraints (rules like primary key/foreign key checks defined in schema) |
+| 8 | **Data Querying** | No query language (requires writing custom code to parse and search files) | Declarative querying (uses structured SQL to search and retrieve data efficiently) |
 
 ---
 
