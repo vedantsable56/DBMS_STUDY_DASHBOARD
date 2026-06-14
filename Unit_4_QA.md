@@ -179,18 +179,16 @@ Every transaction has a **Growing Phase** (acquire locks) and a **Shrinking Phas
 | **Shared (S)** | ✓ Yes | ✗ No |
 | **Exclusive (X)** | ✗ No | ✗ No |
 
-**Comparison — Basic vs Strict vs Rigorous 2PL:**
-
 | Sr. No. | Feature | Basic 2PL | Strict 2PL | Rigorous 2PL |
 |:--------|:--------|:----------|:-----------|:-------------|
-| 1 | **Lock Acquisition** | Acquires locks dynamically in growing phase | Acquires locks dynamically in growing phase | Acquires locks dynamically in growing phase |
-| 2 | **X-Lock Release** | Released dynamically in shrinking phase | Retained until commit or abort (termination) | Retained until commit or abort (termination) |
-| 3 | **S-Lock Release** | Released dynamically in shrinking phase | Released dynamically in shrinking phase | Retained until commit or abort (termination) |
-| 4 | **Cascading Rollback** | Possible (not safe; cascading aborts can occur) | Prevented (guarantees cascadeless schedules) | Prevented (guarantees cascadeless schedules) |
-| 5 | **Deadlock Possible** | Yes | Yes | Yes |
-| 6 | **Concurrency Level** | Highest (locks released early) | Moderate (write locks held until end) | Lowest (all locks held until end) |
-| 7 | **Lock Point** | When first lock is released | At transaction commit or abort | At transaction commit or abort |
-| 8 | **Implementation** | Rarely used due to rollback overhead | Standard implementation in commercial databases | Used in strict distributed synchronization |
+| 1 | **Lock Taking** | Takes locks in growing phase | Takes locks in growing phase | Takes locks in growing phase |
+| 2 | **X-Lock Release** | Released in shrinking phase | Released only at commit/abort | Released only at commit/abort |
+| 3 | **S-Lock Release** | Released in shrinking phase | Released in shrinking phase | Released only at commit/abort |
+| 4 | **Cascading Rollback** | Can happen (not safe) | Cannot happen (safe) | Cannot happen (safe) |
+| 5 | **Deadlock Possible** | Yes, can occur | Yes, can occur | Yes, can occur |
+| 6 | **Speed** | Highest (more parallel work) | Medium (some waiting) | Lowest (most waiting) |
+| 7 | **Lock Point** | When first lock is released | At commit or abort time | At commit or abort time |
+| 8 | **Use in Real Systems** | Rarely used alone | Standard implementation | Used in strict safety systems |
 
 ---
 
@@ -243,13 +241,13 @@ Databases handle deadlocks via **Prevention** (timestamp-based), **Detection** (
 
 | Sr. No. | Feature | Wait-Die | Wound-Wait |
 |:--------|:--------|:---------|:-----------|
-| 1 | **Scheduling Policy** | Non-preemptive scheduling policy | Preemptive scheduling policy |
-| 2 | **Older Requests Younger's Lock** | Older transaction is allowed to wait | Older transaction wounds/aborts younger transaction |
-| 3 | **Younger Requests Older's Lock** | Younger transaction dies (aborts and restarts) | Younger transaction is allowed to wait |
-| 4 | **Victim Transaction** | The younger requesting transaction (active abort) | The younger lock-holding transaction (preempted abort) |
-| 5 | **Abort Frequency** | Higher (younger requesting transaction aborts repeatedly) | Lower (younger transaction waits instead of aborting) |
-| 6 | **Rollback Overhead** | High (wasted work due to repeated restarts) | Low (preemption happens only when older requests lock) |
-| 7 | **Starvation Prevention** | Retains original start timestamp on restart | Retains original start timestamp on restart |
-| 8 | **Optimal Workload** | Best for short transactions with low contention | Best for long, complex transactions with high contention |
+| 1 | **Type** | Non-preemptive scheme | Preemptive scheme |
+| 2 | **Older Requests Younger's Lock** | Older transaction waits | Older wounds (aborts) younger |
+| 3 | **Younger Requests Older's Lock** | Younger dies (aborts itself) | Younger transaction waits |
+| 4 | **Who Gets Aborted?** | The younger requesting transaction | The younger holding transaction |
+| 5 | **Number of Aborts** | Higher (younger keeps dying) | Lower (fewer aborts overall) |
+| 6 | **Wasted Work** | More (young transactions abort often) | Less (waiting is preferred) |
+| 7 | **Starvation Prevention** | Keeps original timestamp on restart | Keeps original timestamp on restart |
+| 8 | **Best Used When** | Transactions are short and fast | Transactions are long and complex |
 
 ---
