@@ -355,21 +355,15 @@ function renderRevision() {
     const card = document.createElement('div');
     card.className = 'revision-card';
     
-    const pointsHtml = rev.points.map(pt => {
-      let text = pt;
-      text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-      return `<li>${text}</li>`;
-    }).join('');
-    
     card.innerHTML = `
       <div class="revision-card-header">
         <span class="revision-card-num">Question ${idx + 1}</span>
         <h3 class="revision-card-title">${rev.question}</h3>
       </div>
       <div class="revision-card-body">
-        <ul>
-          ${pointsHtml}
-        </ul>
+        <div class="qa-content" style="padding: 0;">
+          ${renderMarkdown(rev.content)}
+        </div>
       </div>
     `;
     container.appendChild(card);
