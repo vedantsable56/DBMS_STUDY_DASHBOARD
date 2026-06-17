@@ -382,3 +382,77 @@ Consider a Bookstore with tables: **Books(Book_ID, Title, Price)** and **Orders(
 | 6 | **Responsible Actor** | Database Administrator (DBA) | Database Designer / DBA |
 | 7 | **Mechanism** | Updates internal mapping | Uses logical views |
 | 8 | **Example** | Moving database to SSD | Adding a new column |
+ 
+ ---
+ 
+## Q5. Explain Integrity Constraints in Relational Model [8 Marks]
+
+### Introduction
+
+- **Integrity Constraints** are rules enforced on database tables to keep data accurate, consistent, and reliable.
+- They prevent accidental damage or invalid data entry into the database.
+
+### Diagram
+
+```
+            INTEGRITY CONSTRAINTS
+          /       |       \        \
+     Domain      Key     Entity   Referential
+```
+
+### Key Points
+
+- **Domain Constraint:** values in a column must belong to a predefined set of valid data values (e.g., using CHECK).
+- **Key Constraint:** every table must have a primary key or unique key that identifies each row uniquely.
+- **Entity Integrity Constraint:** no primary key column can ever contain a NULL value.
+- **Referential Integrity Constraint:** a foreign key value must match an existing primary key value in the parent table, or be NULL.
+- **Cascade Actions:** rules like ON DELETE CASCADE to maintain referential links when parent records are deleted.
+
+### Simple Example
+
+```sql
+CREATE TABLE Department (
+  Dept_ID INT PRIMARY KEY, -- Key Constraint
+  Dept_Name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Student (
+  Roll_No INT PRIMARY KEY, -- Entity Integrity (cannot be NULL)
+  Age INT CHECK (Age >= 18), -- Domain Constraint
+  Dept_ID INT,
+  FOREIGN KEY (Dept_ID) REFERENCES Department(Dept_ID) -- Referential Integrity
+);
+```
+
+### Advantages
+
+- Guarantees that data stored in the database is correct and reliable.
+- Enforces business logic rules directly inside the database.
+- Reduces code complexity in frontend application programs.
+
+### Conclusion
+
+- Integrity constraints act as the first line of defense to keep database information consistent during insert and update actions.
+
+---
+
+## Q6. Compare 3NF and BCNF [8 Marks]
+
+### Introduction
+
+- **Third Normal Form (3NF)** and **Boyce-Codd Normal Form (BCNF)** are rules used to remove redundant data from database tables.
+- BCNF is a stronger version of 3NF that handles overlapping candidate keys.
+
+### Comparison Table
+
+| Sr. No. | Feature | Third Normal Form (3NF) | Boyce-Codd Normal Form (BCNF) |
+| :--- | :--- | :--- | :--- |
+| 1 | **Strictness** | Less strict (allows exceptions) | More strict (no exceptions allowed) |
+| 2 | **Core Rule (X → Y)** | X is super key OR Y is prime attribute | X must strictly be a super key |
+| 3 | **Pre-requisite** | Must satisfy 2NF | Must satisfy 3NF |
+| 4 | **Lossless Join** | Always guaranteed | Always guaranteed |
+| 5 | **Dependency Preservation** | Always guaranteed | Not always guaranteed (sometimes lost) |
+| 6 | **Redundancy Level** | Low | Minimal |
+| 7 | **Overlapping Keys** | Can have redundancies | Resolves overlapping candidate keys |
+| 8 | **Real-world Target** | Standard industry target | Used for strict safety systems |
+

@@ -251,3 +251,153 @@ Databases handle deadlocks via **Prevention** (timestamp-based), **Detection** (
 | 8 | **Best Used When** | Short transactions | Long transactions |
 
 ---
+
+## Q5. Explain Database Schedules and Their Types [8 Marks]
+
+### Introduction
+
+- A **Schedule** is the chronological execution order of operations from multiple concurrent transactions.
+- Schedules ensure that transactions run concurrently without violating database consistency.
+
+### Diagram
+
+```
+                     SCHEDULES
+                    /         \
+               Serial       Non-Serial
+                                 \
+                            Serializable
+```
+
+### Key Points
+
+- **Serial Schedule:** transactions run one after another; no interleaving of operations. Always consistent but slow.
+- **Non-Serial Schedule:** operations of different transactions interleave. Faster but can cause inconsistencies.
+- **Serializable Schedule:** a non-serial schedule equivalent to some serial execution.
+- **Conflict Equivalence:** two schedules are equivalent if they have same transactions and same order of conflicting operations.
+- **Conflict Serializability:** a schedule is conflict serializable if it is conflict equivalent to some serial schedule.
+- **Conflicting Operations:** two operations conflict if they belong to different transactions, access same item, and at least one is a Write.
+
+### Simple Example
+
+```
+Serial Schedule S1:          Non-Serial Schedule S2:
+  T1          T2               T1          T2
+Read(A)                      Read(A)
+Write(A)                                  Read(A)
+            Read(A)          Write(A)
+            Write(A)                      Write(A)
+```
+
+### Advantages
+
+- Maximizes CPU utilization and database throughput.
+- Minimizes wait times for users running queries.
+- Guarantees correct final database state.
+
+### Conclusion
+
+- Schedules help manage transaction orders, and serializability guarantees correct execution without concurrency issues.
+
+---
+
+## Q6. Explain View Serializability with Example [8 Marks]
+
+### Introduction
+
+- **View Serializability** is a way to check if a non-serial schedule is consistent.
+- A schedule is view serializable if it is **view equivalent** to some serial schedule.
+
+### Diagram
+
+```
+[Non-Serial Schedule S] --(View Equivalent?)--> [Serial Schedule S']
+```
+
+### Key Points
+
+- **Initial Read:** if T1 reads initial value of A in S, it must read initial value of A in S'.
+- **Write-Read Dependency:** if T1 writes A and T2 reads that value in S, T1 must write and T2 must read in S'.
+- **Final Write:** if T1 performs final write on A in S, T1 must perform final write in S'.
+- **Blind Writes:** writing to a data item without reading it first.
+- **Relation to Conflict Serializability:** every conflict serializable schedule is view serializable, but not vice versa.
+- **Complexity:** checking view serializability is NP-complete (requires testing all serial permutations).
+
+### Simple Example
+
+Consider a schedule S with blind writes (no reads):
+```
+  T1          T2          T3
+Write(A)
+            Write(A)
+                        Write(A)
+```
+- Initial reads: None.
+- Write-read dependencies: None.
+- Final writer of A: T3.
+- In serial schedule T1 -> T2 -> T3, the final writer is also T3.
+- Thus, S is view equivalent to T1 -> T2 -> T3, making it view serializable.
+
+### Advantages
+
+- More flexible than conflict serializability by allowing more concurrent schedules.
+- Correctly handles transactions containing blind writes.
+- Guarantees database state remains consistent.
+
+### Conclusion
+
+- View serializability provides a broader definition of consistency by focusing on data flow correctness rather than conflict ordering.
+
+---
+
+## Q7. Explain Recoverable and Cascadeless Schedules with Examples [8 Marks]
+
+### Introduction
+
+- A **Recoverable Schedule** ensures that if a transaction fails, it can rollback without leaving committed transactions invalid.
+- A **Cascadeless Schedule** prevents the abort of one transaction from causing a chain-reaction abort of others.
+
+### Diagram
+
+```
+[T1 Write(A)] ---> [T2 Read(A)] ---> [T1 Rollback] ---> [T2 must Rollback (Cascading)]
+```
+
+### Key Points
+
+- **Dirty Read:** reading data written by an uncommitted transaction.
+- **Unrecoverable Schedule:** T2 reads uncommitted data from T1, commits, and then T1 aborts. T2 cannot be rolled back now.
+- **Recoverable Schedule Rule:** T2 can commit only after the transaction T1 from which it read has committed.
+- **Cascading Rollback:** aborting one transaction forces multiple uncommitted transactions to abort, wasting CPU work.
+- **Cascadeless Schedule Rule:** transactions can only read data written by already committed transactions (no dirty reads).
+- **Relationship:** every cascadeless schedule is automatically a recoverable schedule.
+
+### Simple Example
+
+```
+Non-Cascadeless (Cascading):
+  T1          T2
+Write(A)
+            Read(A)  <-- Dirty Read
+            Commit
+Commit (or Rollback T1 -> forces T2 rollback)
+
+Cascadeless Schedule:
+  T1          T2
+Write(A)
+Commit
+            Read(A)  <-- Safe Read (Committed Data)
+            Commit
+```
+
+### Advantages
+
+- Prevents dirty reads and data loss.
+- Avoids cascading rollbacks, saving system performance.
+- Simplifies transaction recovery manager tasks.
+
+### Conclusion
+
+- Cascadeless schedules are the standard in modern database engines to ensure transaction recovery is simple and fast.
+
+---

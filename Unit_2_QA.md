@@ -495,5 +495,137 @@ SELECT * FROM Fee_Audit;
 | 6 | **Can Modify :NEW?** | Yes | No |
 | 7 | **Use Case** | Row-level audit | Table-level logging |
 | 8 | **Context** | Single row values | Overall table |
+ 
+ ---
+ 
+## Q6. Explain Nested Queries in SQL with Examples [8 Marks]
+
+### Introduction
+
+- A **Nested Query** (or Subquery) is a query written inside another outer SQL query.
+- The inner query executes first and passes its result to the outer query.
+
+### Diagram
+
+```
++------------------------------------+
+| Outer Query                        |
+| SELECT ... FROM ... WHERE val IN   |
+|   +-----------------------------+  |
+|   | Inner Query (Subquery)      |  |
+|   | SELECT ... FROM ...         |  |
+|   +-----------------------------+  |
++------------------------------------+
+```
+
+### Key Points
+
+- **Scalar Subquery:** returns exactly one value (one row and one column).
+- **Multi-Row Subquery:** returns multiple values (one column, many rows) using `IN`, `ANY`, or `ALL`.
+- **Correlated Subquery:** inner query refers to outer query columns; runs repeatedly for each row.
+- **IN Operator:** checks if a value exists in the subquery result.
+- **ANY Operator:** returns true if value matches any item in subquery result.
+- **ALL Operator:** returns true only if value matches all items in subquery result.
+- **EXISTS Operator:** returns true if subquery returns at least one row.
+
+### Simple Example
+
+```sql
+-- Find students with marks greater than average marks
+SELECT Name, Marks FROM Student
+WHERE Marks > (SELECT AVG(Marks) FROM Student);
+
+-- Find students who enrolled in any course using IN
+SELECT Name FROM Student
+WHERE SID IN (SELECT DISTINCT SID FROM Enrollment);
+```
+
+### Advantages
+
+- Breaks down complex queries into smaller, readable steps.
+- Avoids the need to create temporary tables or views.
+- Easy to understand and debug.
+
+### Conclusion
+
+- Nested queries are powerful for making dynamic comparisons and filtering records based on aggregate values of other tables.
+
+---
+
+## Q7. Compare Stored Procedures and Functions in PL/SQL [8 Marks]
+
+### Introduction
+
+- A **Stored Procedure** and a **Function** are named PL/SQL blocks stored in the database.
+- Procedures execute actions, while Functions perform calculations and return values.
+
+### Comparison Table
+
+| Sr. No. | Feature | Stored Procedure | Function |
+| :--- | :--- | :--- | :--- |
+| 1 | **Return Value** | Optional (returns 0 or multiple values via OUT) | Mandatory (must return exactly one value via RETURN) |
+| 2 | **Call Method** | Executed standalone using CALL or EXECUTE | Called directly inside SQL queries or PL/SQL expressions |
+| 3 | **Return Type** | No return type defined in header | Return type must be defined in header |
+| 4 | **SQL Queries** | Cannot be used inside SELECT or WHERE statements | Can be used inside SELECT or WHERE statements |
+| 5 | **DML Operations** | Can perform DML and save/undo transactions | Restricted DML operations when called in SQL |
+| 6 | **Parameters** | Supports IN, OUT, and IN OUT parameters | Supports IN parameters only (best practice) |
+| 7 | **Primary Purpose** | Used to execute business logic and database tasks | Used to calculate and return computed results |
+| 8 | **Header Syntax** | `CREATE PROCEDURE my_proc(...)` | `CREATE FUNCTION my_func(...) RETURN type` |
+
+---
+
+## Q8. Explain Cursors in PL/SQL with Example [8 Marks]
+
+### Introduction
+
+- A **Cursor** is a pointer to a private memory area (Context Area) used by Oracle to run SQL queries.
+- It is used to retrieve, hold, and process multiple rows returned by a query one-by-one.
+
+### Diagram
+
+```
+[SQL Query] ---> [Context Area (Memory)] ---> [Cursor Pointer] ---> [Fetch Rows 1-by-1]
+```
+
+### Key Points
+
+- **Implicit Cursor:** created automatically by Oracle for all DML operations (INSERT, UPDATE, DELETE).
+- **Explicit Cursor:** created manually by user to handle SELECT queries returning multiple rows.
+- **Life Cycle - Declare:** names the cursor and defines the SELECT query.
+- **Life Cycle - Open:** executes the query and allocates context memory.
+- **Life Cycle - Fetch:** retrieves rows one-by-one into PL/SQL variables.
+- **Life Cycle - Close:** releases context memory when processing is done.
+- **%FOUND:** returns True if the last fetch was successful.
+- **%NOTFOUND:** returns True if no rows are left (used to exit loops).
+- **%ROWCOUNT:** returns the number of rows fetched so far.
+- **%ISOPEN:** returns True if the cursor is open.
+
+### Simple Example
+
+```sql
+DECLARE
+  CURSOR c_student IS SELECT Name FROM Student;
+  v_name Student.Name%TYPE;
+BEGIN
+  OPEN c_student;
+  LOOP
+    FETCH c_student INTO v_name;
+    EXIT WHEN c_student%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE(v_name);
+  END LOOP;
+  CLOSE c_student;
+END;
+```
+
+### Advantages
+
+- Allows processing of query results row-by-row in a controlled loop.
+- Avoids out-of-memory errors by not fetching all rows at once.
+- Gives precise control over data retrieval using attributes.
+
+### Conclusion
+
+- Cursors are essential for handling multi-row outputs and performing row-level logic inside database blocks.
+
 
 ---
