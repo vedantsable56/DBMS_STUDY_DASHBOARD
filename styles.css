@@ -895,3 +895,84 @@ mark {
     display: block;
   }
 }
+
+/* Revision Mode Layout Styles */
+.revision-layout {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.revision-layout.hidden {
+  display: none;
+}
+
+.revision-header {
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+
+.revision-summary-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.revision-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  margin-bottom: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow-premium);
+  transition: var(--transition-smooth);
+}
+
+.revision-card:hover {
+  border-color: hsla(170, 100%, 45%, 0.4);
+  transform: translateY(-2px);
+}
+
+.revision-card-header {
+  margin-bottom: 16px;
+}
+
+.revision-card-num {
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.revision-card-title {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.revision-card-body ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.revision-card-body li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.revision-card-body li::before {
+  content: "⚡";
+  position: absolute;
+  left: 0;
+  top: 1px;
+  font-size: 0.9rem;
+  color: var(--accent-color);
+}

@@ -140,13 +140,36 @@ function renderSidebarUnits() {
 }
 
 window.switchUnit = function(unitIdx) {
-  currentMode = 'study';
+  if (currentMode !== 'study' && currentMode !== 'flash' && currentMode !== 'revision') {
+    currentMode = 'study';
+  }
   currentUnitIndex = unitIdx;
   
-  document.getElementById('btn-mode-study').classList.add('active');
+  document.getElementById('btn-mode-study').classList.remove('active');
   document.getElementById('btn-mode-flash').classList.remove('active');
-  document.getElementById('qa-layout').classList.remove('hidden');
+  document.getElementById('btn-mode-revision').classList.remove('active');
+  
+  document.getElementById('qa-layout').classList.add('hidden');
   document.getElementById('flashcard-layout').classList.remove('active');
+  document.getElementById('revision-layout').classList.add('hidden');
+  
+  if (currentMode === 'study') {
+    document.getElementById('btn-mode-study').classList.add('active');
+    document.getElementById('qa-layout').classList.remove('hidden');
+    renderQuestions();
+  } else if (currentMode === 'revision') {
+    document.getElementById('btn-mode-revision').classList.add('active');
+    document.getElementById('revision-layout').classList.remove('hidden');
+    renderRevision();
+  } else {
+    document.getElementById('btn-mode-flash').classList.add('active');
+    document.getElementById('flashcard-layout').classList.add('active');
+    const unit = currentSubject.units[currentUnitIndex];
+    flashcardList = [...unit.questions];
+    shuffleArray(flashcardList);
+    currentFlashcardIndex = 0;
+    renderFlashcard();
+  }
   
   const links = document.querySelectorAll('.nav-link');
   links.forEach((link, idx) => {
@@ -154,7 +177,6 @@ window.switchUnit = function(unitIdx) {
     else link.classList.remove('active');
   });
   
-  renderQuestions();
   closeMobileSidebar();
 };
 
@@ -280,16 +302,30 @@ window.setMode = function(mode) {
   currentMode = mode;
   const searchInput = document.getElementById('search-input');
   
+  document.getElementById('btn-mode-study').classList.remove('active');
+  document.getElementById('btn-mode-flash').classList.remove('active');
+  document.getElementById('btn-mode-revision').classList.remove('active');
+  
+  document.getElementById('qa-layout').classList.add('hidden');
+  document.getElementById('flashcard-layout').classList.remove('active');
+  document.getElementById('revision-layout').classList.add('hidden');
+  
   if (mode === 'study') {
     searchInput.disabled = false;
+    document.getElementById('btn-mode-study').classList.add('active');
+    document.getElementById('qa-layout').classList.remove('hidden');
     switchUnit(currentUnitIndex);
+  } else if (mode === 'revision') {
+    searchInput.disabled = true;
+    searchInput.value = '';
+    document.getElementById('btn-mode-revision').classList.add('active');
+    document.getElementById('revision-layout').classList.remove('hidden');
+    renderRevision();
   } else {
     searchInput.disabled = true;
     searchInput.value = '';
     
-    document.getElementById('btn-mode-study').classList.remove('active');
     document.getElementById('btn-mode-flash').classList.add('active');
-    document.getElementById('qa-layout').classList.add('hidden');
     document.getElementById('flashcard-layout').classList.add('active');
     
     const unit = currentSubject.units[currentUnitIndex];
@@ -299,6 +335,46 @@ window.setMode = function(mode) {
     renderFlashcard();
   }
 };
+
+function renderRevision() {
+  const container = document.getElementById('revision-list-container');
+  container.innerHTML = '';
+  
+  const unit = currentSubject.units[currentUnitIndex];
+  document.getElementById('header-unit-title').textContent = `Revision — Unit ${unit.unitNum}: ${unit.unitTitle}`;
+  document.getElementById('header-subject-title').textContent = currentSubject.subjectName;
+  
+  const revisionsToRender = revision_data.filter(rev => rev.unit === unit.unitNum);
+  
+  if (revisionsToRender.length === 0) {
+    container.innerHTML = `<div class="empty-state"><h3>No revision notes available for this unit.</h3></div>`;
+    return;
+  }
+  
+  revisionsToRender.forEach((rev, idx) => {
+    const card = document.createElement('div');
+    card.className = 'revision-card';
+    
+    const pointsHtml = rev.points.map(pt => {
+      let text = pt;
+      text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      return `<li>${text}</li>`;
+    }).join('');
+    
+    card.innerHTML = `
+      <div class="revision-card-header">
+        <span class="revision-card-num">Question ${idx + 1}</span>
+        <h3 class="revision-card-title">${rev.question}</h3>
+      </div>
+      <div class="revision-card-body">
+        <ul>
+          ${pointsHtml}
+        </ul>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
 
 function shuffleArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
