@@ -181,14 +181,14 @@ Every transaction has a **Growing Phase** (acquire locks) and a **Shrinking Phas
 
 | Sr. No. | Feature | Basic 2PL | Strict 2PL | Rigorous 2PL |
 |:--------|:--------|:----------|:-----------|:-------------|
-| 1 | **Lock Taking** | Takes locks in growing phase | Takes locks in growing phase | Takes locks in growing phase |
-| 2 | **X-Lock Release** | Released in shrinking phase | Released only at commit/abort | Released only at commit/abort |
-| 3 | **S-Lock Release** | Released in shrinking phase | Released in shrinking phase | Released only at commit/abort |
-| 4 | **Cascading Rollback** | Can happen (not safe) | Cannot happen (safe) | Cannot happen (safe) |
-| 5 | **Deadlock Possible** | Yes, can occur | Yes, can occur | Yes, can occur |
-| 6 | **Speed** | Highest (more parallel work) | Medium (some waiting) | Lowest (most waiting) |
-| 7 | **Lock Point** | When first lock is released | At commit or abort time | At commit or abort time |
-| 8 | **Use in Real Systems** | Rarely used alone | Standard implementation | Used in strict safety systems |
+| 1 | **Lock Taking** | Growing phase | Growing phase | Growing phase |
+| 2 | **X-Lock Release** | Shrinking phase | Released at commit | Released at commit |
+| 3 | **S-Lock Release** | Shrinking phase | Shrinking phase | Released at commit |
+| 4 | **Cascading Rollback** | Possible | Prevented | Prevented |
+| 5 | **Deadlock** | Possible | Possible | Possible |
+| 6 | **Speed / Concurrency** | High | Medium | Low |
+| 7 | **Lock Point** | First lock released | At commit | At commit |
+| 8 | **Use Case** | Rarely used | Standard DB engines | High safety systems |
 
 ---
 
@@ -241,13 +241,13 @@ Databases handle deadlocks via **Prevention** (timestamp-based), **Detection** (
 
 | Sr. No. | Feature | Wait-Die | Wound-Wait |
 |:--------|:--------|:---------|:-----------|
-| 1 | **Type** | Non-preemptive scheme | Preemptive scheme |
-| 2 | **Older Requests Younger's Lock** | Older transaction waits | Older wounds (aborts) younger |
-| 3 | **Younger Requests Older's Lock** | Younger dies (aborts itself) | Younger transaction waits |
-| 4 | **Who Gets Aborted?** | The younger requesting transaction | The younger holding transaction |
-| 5 | **Number of Aborts** | Higher (younger keeps dying) | Lower (fewer aborts overall) |
-| 6 | **Wasted Work** | More (young transactions abort often) | Less (waiting is preferred) |
-| 7 | **Starvation Prevention** | Keeps original timestamp on restart | Keeps original timestamp on restart |
-| 8 | **Best Used When** | Transactions are short and fast | Transactions are long and complex |
+| 1 | **Type** | Non-preemptive | Preemptive |
+| 2 | **Older Requests Younger** | Waits | Wounds (aborts younger) |
+| 3 | **Younger Requests Older** | Dies (aborts itself) | Waits |
+| 4 | **Who Aborts?** | Younger requesting | Younger holding |
+| 5 | **Number of Aborts** | Higher | Lower |
+| 6 | **Wasted Work** | More | Less |
+| 7 | **Starvation** | Avoided (keeps timestamp) | Avoided (keeps timestamp) |
+| 8 | **Best Used When** | Short transactions | Long transactions |
 
 ---

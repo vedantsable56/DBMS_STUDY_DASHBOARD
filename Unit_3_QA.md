@@ -67,14 +67,14 @@ The fix is **normalization** — splitting the big table into smaller, cleaner t
 
 | Sr. No. | Feature | Before Normalization | After Normalization |
 |:---|:---|:---|:---|
-| 1 | **Insertion Anomaly** | Present (cannot add department without adding student) | Resolved (can insert department directly) |
-| 2 | **Deletion Anomaly** | Present (deleting student deletes department details) | Resolved (deleting student preserves department details) |
-| 3 | **Update Anomaly** | Present (must update department in multiple student rows) | Resolved (update department in a single row only) |
-| 4 | **Data Redundancy** | High (department info repeated for every student) | Low (department info stored exactly once) |
-| 5 | **Data Integrity** | Low (risk of inconsistent data across rows) | High (enforced by keys and unique storage) |
-| 6 | **Storage Space** | Wasted (due to repeating columns in many rows) | Optimized (no repeated columns) |
-| 7 | **Primary Key** | One large composite key for mixed entities | Distinct primary keys for each table |
-| 8 | **Relational Schema** | Single unnormalized table mixing multiple entities | Decomposed tables linked by foreign keys |
+| 1 | **Insertion Anomaly** | Present | Resolved |
+| 2 | **Deletion Anomaly** | Present | Resolved |
+| 3 | **Update Anomaly** | Present | Resolved |
+| 4 | **Data Redundancy** | High | Low |
+| 5 | **Data Integrity** | Low | High |
+| 6 | **Storage Space** | Wasted | Optimized |
+| 7 | **Primary Key** | Composite Key | Distinct Keys |
+| 8 | **Table Structure** | One Large Table | Decomposed Tables |
 
 ---
 
@@ -180,14 +180,14 @@ Apply B → C:  {E, D, A, B, C}
 
 | Sr. No. | Feature | Super Key | Candidate Key |
 |:---|:---|:---|:---|
-| 1 | **Definition** | A set of attributes that uniquely identifies a row | A minimal super key (no proper subset is a key) |
-| 2 | **Minimality** | Not minimal (can contain unnecessary attributes) | Strictly minimal (irreducible set) |
-| 3 | **Count** | Many possible combinations exist | Fewer combinations qualify |
-| 4 | **Nullable Values** | May contain nullable attributes | Strictly non-nullable attributes |
-| 5 | **Redundancy** | Can have redundant columns | Zero redundant columns |
-| 6 | **Primary Key Eligibility** | Cannot directly be chosen as Primary Key | Directly eligible to be selected as Primary Key |
-| 7 | **Example (R={A,B})** | Both {A} and {A, B} are super keys | Only {A} is a candidate key |
-| 8 | **Application** | Baseline definition for tuple identification | Used for normalization and Primary Key selection |
+| 1 | **Definition** | Uniquely identifies a row | Minimal set that uniquely identifies |
+| 2 | **Minimality** | Not minimal | Strictly minimal |
+| 3 | **Count** | Many | Few |
+| 4 | **Nullable** | Can be nullable | Strictly non-nullable |
+| 5 | **Redundancy** | Redundancy allowed | Zero redundancy |
+| 6 | **Primary Key Selection** | Not chosen directly | Directly eligible |
+| 7 | **Example (Key={A})** | `{A}`, `{A, B}` | Only `{A}` |
+| 8 | **Application** | Identifies tuples | Used to choose Primary Key |
 
 ---
 
@@ -319,14 +319,13 @@ Student_Guide(Student_ID, Guide)    ← PK: (Student_ID, Guide)
 
 | Sr. No. | Feature | 1NF | 2NF | 3NF | BCNF |
 |:---|:---|:---|:---|:---|:---|
-| 1 | **Primary Goal** | Enforce atomic values (no composite/multi-valued attributes) | Eliminate partial dependencies (non-prime depends on full key) | Eliminate transitive dependencies (non-prime depends on key only) | Ensure left side of all FDs is a super key |
-| 2 | **Precondition** | None | Must satisfy 1NF | Must satisfy 2NF | Must satisfy 3NF |
+| 1 | **Primary Goal** | Atomic values | No partial dependency | No transitive dependency | LH side is super key |
+| 2 | **Precondition** | None | Must be in 1NF | Must be in 2NF | Must be in 3NF |
 | 3 | **Partial Dependency** | Allowed | Eliminated | Eliminated | Eliminated |
 | 4 | **Transitive Dependency** | Allowed | Allowed | Eliminated | Eliminated |
-| 5 | **Left Side = Super Key?** | Not required | Not required | Not required (optional if right side is prime attribute) | Strictly required for all non-trivial FDs |
-| 6 | **Decomposition Fix** | Split multi-valued columns into separate rows | Move partially dependent columns to new table | Move transitively dependent columns to new table | Move overlapping key dependencies to new table |
-| 7 | **Data Redundancy** | High | Moderate | Low | Minimal |
-| 8 | **Dependency Preservation** | Always preserved | Always preserved | Always preserved | May not be preserved (sometimes lost) |
+| 5 | **Left Side = Super Key?** | No | No | No | Strictly required |
+| 6 | **Redundancy Level** | High | Medium | Low | Minimal |
+| 7 | **Dependency Preservation** | Guaranteed | Guaranteed | Guaranteed | Not guaranteed |
 
 ---
 
@@ -375,11 +374,11 @@ Consider a Bookstore with tables: **Books(Book_ID, Title, Price)** and **Orders(
 
 | Sr. No. | Feature | Physical Data Independence (Rule 8) | Logical Data Independence (Rule 9) |
 |:---|:---|:---|:---|
-| 1 | **Definition** | Change physical storage without affecting conceptual schema | Change conceptual schema without affecting views/programs |
-| 2 | **Scope of Change** | File location, indexes, database path, or disk type | Adding columns, renaming tables, or splitting relations |
-| 3 | **Unaffected Layer** | Conceptual tables and SQL queries remain same | External views and application programs remain same |
-| 4 | **Architectural Level** | Mapping between Internal and Conceptual levels | Mapping between Conceptual and External levels |
-| 5 | **Frequency** | High (hardware upgrades or index tuning) | Low (infrequent database schema redesign) |
-| 6 | **Responsible Actor** | Database Administrator (DBA) | Database Designer and DBA |
-| 7 | **DBMS Mechanism** | Updates internal-to-conceptual schema mapping | Uses logical views to hide structural changes |
-| 8 | **Example** | Moving database files from HDD to SSD | Adding an optional "Mobile" column to student table |
+| 1 | **Definition** | Change physical storage without affecting logic | Change logic schema without affecting programs |
+| 2 | **Scope of Change** | File paths, indexes, disk storage | Adding columns, splitting tables |
+| 3 | **Unaffected Layer** | Conceptual schema and queries | External views and programs |
+| 4 | **Level Position** | Internal to Conceptual mapping | Conceptual to External mapping |
+| 5 | **Frequency** | High (hardware upgrades) | Low (schema redesign) |
+| 6 | **Responsible Actor** | Database Administrator (DBA) | Database Designer / DBA |
+| 7 | **Mechanism** | Updates internal mapping | Uses logical views |
+| 8 | **Example** | Moving database to SSD | Adding a new column |

@@ -6,16 +6,16 @@
 
 **SQL databases** store data in **tables** with a **fixed schema** and use **SQL language** for queries. **NoSQL databases** store data in **flexible formats** like documents, key-value pairs, or graphs and use **their own query methods**.
 
-| Sr. | Feature | SQL Database | NoSQL Database |
-| :--- | :--- | :--- | :--- |
-| 1 | **Schema Architecture** | Strict, predefined schema (defined via DDL before insert) | Dynamic schema (schema-less / schema-on-read) |
-| 2 | **Scalability Model** | Vertical scalability (scale-up: add CPU/RAM to one server) | Horizontal scalability (scale-out: partition across cluster) |
-| 3 | **Query Interface** | Standardized Declarative SQL (Structured Query Language) | No standard query language (uses custom APIs or JSON queries) |
-| 4 | **Data Model** | Relational tables (consisting of structured rows and columns) | Semi-structured (JSON documents, key-value, graph, column-family) |
-| 5 | **Transaction Integrity** | Strict ACID properties (Atomicity, Consistency, Isolation, Durability) | BASE properties (Basically Available, Soft-state, Eventual consistency) |
-| 6 | **Relational Joins** | Native SQL JOINs supported by foreign keys | Denormalized storage (embedded documents; no native JOINs) |
-| 7 | **Best Used For** | Complex transactions and relational safety (e.g., Banking) | High throughput and varying data models (e.g., Social Media) |
-| 8 | **Examples** | MySQL, PostgreSQL, Oracle, MS SQL Server | MongoDB, Redis, Apache Cassandra, Neo4j |
+| Feature | SQL | NoSQL |
+| :--- | :--- | :--- |
+| **Data Storage** | Tables | Documents, Key-Value, Graph |
+| **Schema** | Fixed Schema | Flexible Schema |
+| **Query Language** | SQL | Different query methods |
+| **Scalability** | Vertical Scaling | Horizontal Scaling |
+| **Transactions** | ACID | BASE |
+| **Joins** | Supported | Generally not used |
+| **Best For** | Banking, ERP | Social Media, Big Data |
+| **Examples** | MySQL, Oracle, PostgreSQL | MongoDB, Cassandra, Redis |
 
 ---
 
@@ -158,14 +158,14 @@ Availability (A)   Partition Tolerance (P)
 
 | Sr. | Feature | ACID Model (SQL) | BASE Model (NoSQL) |
 | :--- | :--- | :--- | :--- |
-| 1 | **Definition** | Atomicity, Consistency, Isolation, Durability | Basically Available, Soft-state, Eventually Consistent |
-| 2 | **Consistency** | Strong Consistency (all nodes see identical state immediately) | Eventual Consistency (replicas sync asynchronously over time) |
-| 3 | **Availability** | Prioritizes consistency over availability (stalls on failure) | Prioritizes availability over consistency (operational on failure) |
-| 4 | **Data State** | Consistent (transitions synchronously between defined states) | Soft-state (data state changes dynamically in background) |
-| 5 | **Design Focus** | High database safety and strict correctness | High availability and horizontal scaling |
-| 6 | **Transaction Scope** | Multi-row distributed transactions supported | Single-key or single-document transactions only |
-| 7 | **Scalability** | Vertical scaling (scale-up: adding hardware resources) | Horizontal scaling (scale-out: data sharding and replica sets) |
-| 8 | **Best Used For** | Financial transactions, checkout payments, medical records | Social feeds, shopping carts, activity logs, web page views |
+| 1 | **Definition** | Atomicity, Consistency, Isolation, Durability | Basically Available, Soft-state, Eventual consistency |
+| 2 | **Consistency** | Strong Consistency | Eventual Consistency |
+| 3 | **Availability** | Prioritizes consistency | Prioritizes availability |
+| 4 | **Data State** | Fixed / Consistent | Soft-state |
+| 5 | **Design Focus** | Correctness & safety | Speed & scalability |
+| 6 | **Transaction Scope** | Multi-row transactions | Single-document transactions |
+| 7 | **Scalability** | Vertical Scaling | Horizontal Scaling |
+| 8 | **Best Used For** | Banking, Payments | Social Feeds, Activity logs |
 
 ---
 

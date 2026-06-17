@@ -13,14 +13,14 @@
 
 | Sr. No. | Feature | File Processing System (FPS) | Database Management System (DBMS) |
 |:---:|:---|:---|:---|
-| 1 | **Data Redundancy** | High redundancy (same data duplicated in multiple files) | Low redundancy (data stored centrally in one place) |
-| 2 | **Data Consistency** | Low consistency (updating one file does not update others) | High consistency (updates propagate automatically) |
-| 3 | **Data Independence** | No data independence (change in file format breaks programs) | Logical and physical data independence is provided |
-| 4 | **Security & Access** | Poor security (limited to basic file-level passwords) | Robust security (supports user access roles and permissions) |
-| 5 | **Concurrency Control** | No concurrency control (multiple users cannot write safely) | Built-in concurrency control (using locking protocols) |
-| 6 | **Backup & Recovery** | Manual backup (high risk of data loss on crash) | Automatic crash recovery (uses transaction logs) |
-| 7 | **Integrity Constraints** | No central rules (validation must be coded in programs) | Centralized rules (keys and constraints defined in schema) |
-| 8 | **Data Querying** | No query language (must write custom code to search files) | Declarative querying (uses simple SQL queries) |
+| 1 | **Data Redundancy** | High | Low |
+| 2 | **Data Consistency** | Low | High |
+| 3 | **Data Independence** | None | Full |
+| 4 | **Security & Access** | Low | High |
+| 5 | **Concurrency Control** | None | Supported |
+| 6 | **Backup & Recovery** | Manual | Automatic |
+| 7 | **Integrity Constraints** | Hard | Easy |
+| 8 | **Data Querying** | Hard | Easy |
 
 ---
 
